@@ -1,5 +1,5 @@
-from django.shortcuts import render
-from ecommerceapp.models import Contact
+from django.shortcuts import redirect, render
+from ecommerceapp.models import Contact, Order, OrderUpdate
 from django.contrib import messages
 from ecommerceapp.models import Product
 from math import ceil
@@ -48,7 +48,7 @@ def checkout(request):
         state = request.POST.get('state', '')
         zip_code = request.POST.get('zip_code', '')
         phone = request.POST.get('phone', '')
-        order = Orders(
+        order = Order(
             items_json=items_json, name=name, amount=amount, email=email, 
             address1=address1, address2=address2, city=city, state=state, 
             zip_code=zip_code, phone=phone
@@ -63,6 +63,17 @@ def checkout(request):
         
 
     return render(request, 'checkout.html')
+
+
+
+def profile(request):
+    if not request.user.is_authenticated:
+        messages.warning(request, 'Please login to continue')
+        return redirect('authapp:login')
+    
+
+
+    return render(request, 'profile.html')
 
 def about(request):
     return render(request, 'about.html')
