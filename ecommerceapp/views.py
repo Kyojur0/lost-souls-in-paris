@@ -6,6 +6,15 @@ from math import ceil
 
 # Create your views here.
 def index(request):
+    """
+    This function simply populates and returns the index page of the website.
+
+    Args:
+        request (HttpRequest): The incoming request object.
+
+    Returns:
+        HttpResponse: The response object.
+    """
     allProds = []
     catprods = Product.objects.values('category','product_id')
     print(catprods)
@@ -19,6 +28,16 @@ def index(request):
     return render(request,"index.html",params)
 
 def contact(request):
+    """
+    This function handles the contact form submission.
+
+    Args:
+        request (HttpRequest): The incoming request object.
+
+    Returns:
+        HttpResponse: The response object.
+
+    """
     if request.method == 'POST':
         name = request.POST['name']
         email = request.POST['email']
@@ -33,9 +52,19 @@ def contact(request):
     return render(request, 'contact.html')
 
 def checkout(request):
+    """
+    This function handles the checkout process.
+
+    Args:
+        request (HttpRequest): The incoming request object.
+
+    Returns:
+        HttpResponse: The response object.
+
+    """
     if not request.user.is_authenticated:
         messages.warning(request, 'Please login to continue')
-        return render(request, 'login.html')
+        return redirect('authapp:login')
     
     if request.method == 'POST':
         items_json = request.POST.get('itemsJson', '')
@@ -64,16 +93,34 @@ def checkout(request):
 
     return render(request, 'checkout.html')
 
-
-
 def profile(request):
+    """
+    This function handles the user's profile page. Sends additional info to the template 
+    by the name context
+
+    Args:
+        request (HttpRequest): The incoming request object.
+
+    Returns:
+        HttpResponse: The response object.
+
+    """
     if not request.user.is_authenticated:
-        messages.warning(request, 'Please login to continue')
+        messages.warning(request,"Login & Try Again")
         return redirect('authapp:login')
-    
-
-
-    return render(request, 'profile.html')
+    currentuser=request.user.username
+    items = Order.objects.filter(email=currentuser)
+    rid=""
+    for i in items:
+        print(i.oid)
+        myid=i.oid
+        rid=myid.replace("ShopyCart","")
+        print(rid)
+    status=OrderUpdate.objects.filter(order_id=int(rid))
+    for j in status:
+        print(j.update_desc)
+    context ={"items":items,"status":status}
+    return render(request,"profile.html",context)
 
 def about(request):
     return render(request, 'about.html')

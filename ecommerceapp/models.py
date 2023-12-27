@@ -1,5 +1,12 @@
 from django.db import models
 
+
+"""
+
+    - Following classes are "tables" for database 
+
+"""
+
 # Create your models here.
 class Contact(models.Model):
     contact_id = models.AutoField(primary_key=True)

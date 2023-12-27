@@ -20,6 +20,22 @@ from django.conf.urls.static import static
 from django.conf import settings
 
 
+"""
+
+    What this code means is that whenever django encounters `/` it will send the URL 
+    to the `urls.py` file of the `ecommerceapp` app. And whenever it encounters URL 
+    that begins with `/authapp/` it will send the URL to the `urls.py` file of the
+    `authapp` app. And whenever it encounters URL that begins with `/admin/` it will
+    send the URL to the default django admin page.
+    
+    The `+ static` part is used to serve the static files of the project. It only 
+    tells the django that media files of the project are located in the `MEDIA_ROOT`
+    directory. And it tells the django that the static files of the project are located
+    in the `STATIC_ROOT` directory. And it tells the django that the URL for the media
+    files is `MEDIA_URL` and the URL for the static files is `STATIC_URL`.
+    
+"""
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('ecommerceapp.urls', namespace='ecomapp')),
