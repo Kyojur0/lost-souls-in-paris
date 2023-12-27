@@ -1,0 +1,33 @@
+# Stage 1: Build
+FROM python:3.8-alpine as builder
+
+# Set the working directory in the container to /app
+WORKDIR /app
+
+# Add the current directory contents into the container at /app
+ADD . /app
+
+# Install build dependencies
+RUN apk add --no-cache --virtual .build-deps gcc musl-dev
+
+# Install any needed packages specified in requirements.txt
+RUN pip install --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+# Stage 2: Run
+FROM python:3.8-alpine
+
+# Copy only the dependencies installation from the 1st stage image
+COPY --from=builder /usr/local /usr/local
+
+# Make port 80 available to the world outside this container
+EXPOSE 80
+
+# Set the working directory in the container to /app
+WORKDIR /app
+
+# Copy the rest of the application code from the 1st stage image
+COPY --from=builder /app /app
+
+# Run Django development server with livereload
+CMD ["python", "./manage.py", "livereload"]
